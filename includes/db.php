@@ -1,9 +1,9 @@
 <?php
-// PDO db connection
-$host = 'db';  // Dit moet overeenkomen met de servicenaam van MySQL in docker-compose.yml
-$db   = 'mydb'; // De naam van je database
-$user = 'user'; // Je MySQL-gebruikersnaam
-$pass = 'test'; // Je MySQL-wachtwoord
+
+$host = 'localhost';  // Gewijzigd van 'db' naar 'localhost' voor XAMPP
+$db   = 'mydb';       // De naam van de database die je in XAMPP phpMyAdmin aanmaakt
+$user = 'root';        // De standaard XAMPP gebruikersnaam
+$pass = '';            // Het standaard XAMPP wachtwoord is leeg
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
