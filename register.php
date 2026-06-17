@@ -8,20 +8,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $passwordcheck = $_POST['passwordcheck'];
 
     if ($password == $passwordcheck) {
-        $stmt = $pdo->prepare("SELECT * FROM user WHERE username = ?");
-        $stmt->execute([$username]);
-        if ($stmt->rowCount() == 0) {
-            $stmt = $pdo->prepare("INSERT INTO user (username, password, balance, isAdmin) VALUES (?, ?, 100, 0)");
-            $stmt->execute([$username, $password]);
-            $success = "Je account is aangemaakt, je kunt nu inloggen";
+        
+        // CONTROLEER DE WACHTWOORDSTERKTE (Minimaal 8 tekens, 1 hoofdletter en 1 cijfer)
+        if (strlen($password) < 8 || !preg_match("/[0-9]/", $password) || !preg_match("/[A-Z]/", $password)) {
+            $error = "Wachtwoord must be at least 8 characters long, and contain a capital letter and a number.";
         } else {
-            $error = "Deze gebruikersnaam is al in gebruik";
+            
+            $stmt = $pdo->prepare("SELECT * FROM user WHERE username = ?");
+            $stmt->execute([$username]);
+            
+            if ($stmt->rowCount() == 0) {
+                // MAAK HET WACHTWOORD VEILIG (Hashing)
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                
+                // SLA DE GEHASHDE VERSIE OP IN DE DATABASE
+                $stmt = $pdo->prepare("INSERT INTO user (username, password, balance, isAdmin) VALUES (?, ?, 100, 0)");
+                $stmt->execute([$username, $hashed_password]);
+                
+                $success = "Je account is aangemaakt, je kunt nu inloggen";
+            } else {
+                $error = "Deze gebruikersnaam is al in gebruik";
+            }
         }
     } else {
         $error = "De wachtwoorden komen niet overeen";
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Omanido - registreren</title>
     <!-- Voeg Tailwind CSS toe via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
     <?php include 'includes/header.php'; ?>
@@ -44,16 +56,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php if (isset($error)): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
                 <strong class="font-bold">Fout!</strong>
-                <span class="block sm:inline"><?= $error ?></span>
+                <span class="block sm:inline"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></span>
             </div>
         <?php endif; ?>
         <?php if (isset($success)): ?>
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
                 <strong class="font-bold">Gelukt!</strong>
-                <span class="block sm:inline"><?= $success ?></span>
+                <span class="block sm:inline"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></span>
             </div>
         <?php endif; ?>
-        <form action="<? echo htmlspecialchars($_SERVER["PHP_SELF"]);  ?>" method="post">
+        
+        <!-- XSS beveiliging toegevoegd op de PHP_SELF actie -->
+        <form action="<?= htmlspecialchars($_SERVER["PHP_SELF"], ENT_QUOTES, 'UTF-8'); ?>" method="post">
             <div class="mb-4">
                 <label for="username" class="block text-sm font-medium text-gray-700">Gebruikersnaam:</label>
                 <input type="text" id="username" name="username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
