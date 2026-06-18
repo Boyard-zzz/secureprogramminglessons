@@ -68,7 +68,7 @@ $incomingTransactions = $stmt->fetchAll();
                 <p class="text-center text-red-500 font-bold">Er zijn geen uitgaande transacties.</p>
             <?php endif; ?>
         </div>
-
+        #cross site scripting gedaan
         <div class="col-span-1">
             <?php if (!empty($incomingTransactions)): ?>
                 <h2 class="text-lg text-center font-bold mb-6">Inkomende Transacties</h2>
