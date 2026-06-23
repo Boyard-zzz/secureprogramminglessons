@@ -10,6 +10,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($password == $passwordcheck) {
         
         // CONTROLEER DE WACHTWOORDSTERKTE (Minimaal 8 tekens, 1 hoofdletter en 1 cijfer)
+
+        // dit toegevoegd
         if (strlen($password) < 8 || !preg_match("/[0-9]/", $password) || !preg_match("/[A-Z]/", $password)) {
             $error = "Wachtwoord must be at least 8 characters long, and contain a capital letter and a number.";
         } else {
@@ -19,6 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             if ($stmt->rowCount() == 0) {
                 // MAAK HET WACHTWOORD VEILIG (Hashing)
+                // Dit toegevoegd om het wachtwoord te hashen
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
                 // SLA DE GEHASHDE VERSIE OP IN DE DATABASE
