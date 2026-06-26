@@ -2,10 +2,17 @@
 session_start();
 include 'includes/db.php';
 
+
 if(!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){
     header("location: index.php");
     exit;
 }
+
+if (!isset($_SESSION['isAdmin']) || $_SESSION['isAdmin'] != 1) {
+    header("location: dashboard.php"); // Stuur gewone klanten direct weg
+    exit;
+}
+
 
 // show users
 
@@ -39,9 +46,9 @@ $users = $stmt->fetchAll();
         <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
-                <td class="border-b p-2"><?= $user['id'] ?></td>
-               <td class="border-b p-2"><a href="transacties.php?id=<?= $user['id'] ?>"><?= $user['username'] ?></a></td>
-                <td class="border-b p-2">€<?= number_format($user['balance'], 2, ',', '.') ?></td>
+                 <td class="border-b p-2"><?= htmlspecialchars($user['id'], ENT_QUOTES, 'UTF-8') ?></td>
+                 <td class="border-b p-2"><a href="transacties.php?id=<?= htmlspecialchars($user['id'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8') ?></a></td>
+                 <td class="border-b p-2">€<?= number_format($user['balance'], 2, ',', '.') ?></td>
             </tr>
         <?php endforeach; ?>
         </tbody>
