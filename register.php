@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($password == $passwordcheck) {
         
         // CONTROLEER DE WACHTWOORDSTERKTE (Minimaal 8 tekens, 1 hoofdletter en 1 cijfer)
-
+        // had de password hash perongeluk eerder toegevoegd waardoor ik bijna niks hoefde te doen voor deze opdracht.
         // dit toegevoegd
         if (strlen($password) < 8 || !preg_match("/[0-9]/", $password) || !preg_match("/[A-Z]/", $password)) {
             $error = "Wachtwoord must be at least 8 characters long, and contain a capital letter and a number.";
